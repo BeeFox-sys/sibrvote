@@ -1,0 +1,19 @@
+{% layout "layouts/default.html" %}
+{% assign page = "votes" %}
+
+{% block "content" %}
+    <h2>{{board.name}}</h2>
+    <p>{{board.description}}</p>
+    {%assign itemsize = items | size%}
+    <div class="board {% if itemsize <= 25 %}squares{% endif %} {% unless user.discord %}logout{%endunless%}" id={{board.id}}>
+        <div class=title>
+            <p class=title>{{board.itemname}}</p>
+            <p class=title>Votes</p>
+            <p class=title></p>
+        </div>
+    
+    </div>
+    <div class="messageContainer">
+        <div class=message>Vote Counted!</div>
+    </div>
+{% endblock %}

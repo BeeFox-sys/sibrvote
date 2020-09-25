@@ -1,0 +1,10 @@
+{% layout 'layouts/default.html' %}
+{% assign page = 'vote' %}
+
+{% block content%}
+    <div class="catagories">
+        {% for board in boards %}
+            <a href="vote/{{board.id}}">{{board.display}}</a>
+        {% endfor %}
+    </div>
+{% endblock %}

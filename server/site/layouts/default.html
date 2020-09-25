@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIBR Vote!</title>
+    <link rel="stylesheet" href="/static/normalize.css">
+    <link rel="stylesheet" href="/static/main.css">
+    <script src="/static/index.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400;1,600&amp;display=swap">
+</head>
+<body>
+    <div class="topBar"><h1>SIBR presents: VOTE!</h1><ul>
+        <li {% if page == "home" %}class="active"{% endif %}><a href="/">Home</a></li>
+        <li {% if page == "vote" %}class="active"{% endif %}><a href="/list">Votes</a></li>
+        {% unless user.discord %}
+        <li><a href="https://discord.com/api/oauth2/authorize?client_id={{login.client}}&redirect_uri={{login.redirect}}&response_type=code&scope=identify&state={{login.state}}">Login With Discord</a></li>
+        {% else %}
+        <li><a href="/logout">Logout</a></li>
+        {% endunless %}
+    </ul>
+    {% if user.discord %}<span class="username">Logged in as {{user.discord.username}}</span>{% endif %}
+    </div>
+    <div class="sideBar">
+        <div class=sideBarSticky>
+        <img src="/static/logo.svg" class="logo">
+        <ul class="links">
+            <li><a href="https://github.com/Society-for-Internet-Blaseball-Research/sibr-faq/blob/master/README.md">FAQ</a></li>
+            <li><a href="https://github.com/Society-for-Internet-Blaseball-Research/sibr-faq/blob/master/projects.md">Projects</a></li>
+            <li><a href="https://research.blaseball-reference.com/">Research</a></li>
+            <li><a href="https://sibr.dev/falsehoods">Falsehoods</a></li>
+            <li><a href="https://github.com/Society-for-Internet-Blaseball-Research/blaseball-api-spec">Resources</a></li>
+            <li><a href="https://sibr.bigcartel.com/">Merch</a></li>
+        </ul>
+        <ul class="icons">
+            <li><a href="https://discord.gg/F8YSJE6"><img src="/static/discord.svg" alt="Join our Discord"></a></li
+            ><li><a href="https://twitter.com/SIBROfficial"><img src="/static/twitter.svg" alt="Follow us on Twitter"></a></li
+            ><li><a href="https://github.com/Society-for-Internet-Blaseball-Research"><img src="/static/github.svg" alt="SIBR on GitHub"></a></li>
+        </ul>
+        </div>
+    </div>
+    <div class="content">
+        {% block content %}This has no content!{% endblock %}
+    </div>
+</body>
+</html>

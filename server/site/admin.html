@@ -1,0 +1,46 @@
+{% layout "layouts/default.html"%}
+<script src="/static/admin.js"></script>
+{% block "content" %}
+    <div class=admin>
+        <div class="addBoard">
+            <p>Add Board</p>
+            <input type="text" placeholder="Board Name">
+            <input type="text" placeholder="Slug">
+            <input type="text" placeholder="Description">
+            <input type="text" placeholder="Item Name">
+            <input type="number" placeholder="Allowed Votes">
+
+            <button>Add</button>
+        </div>
+        <div class="removeBoard">
+            <p>Remove Board</p>
+            <input type="text" placeholder="Board Name">
+            <button>Remove</button>
+        </div>
+        <div class="addItem">
+            <p>Add Items to board 
+            <select>
+                {% for board in boards %}
+                    <option value={{board.id}}>{{board.name}}</option>
+                {%endfor%}
+            </select></p>
+            <textarea name="" id="" cols="30" rows="10"></textarea>
+            <p><button>add</button></p>
+        </div>
+        <div class="removeItem">
+            <p>Remove Items from board 
+            <select>
+                {% for board in boards %}
+                    <option value={{board.id}}>{{board.name}}</option>
+                {%endfor%}
+            </select></p>
+            <textarea name="" id="" cols="30" rows="10"></textarea>
+            <p><button>remove</button></p>
+        </div>
+        <div class="addAdmin">
+            <p>Add Admin</p>
+            <input type="text" placeholder="Discord ID">
+            <button>Add</button>
+        </div>
+    </div>
+{% endblock %}
