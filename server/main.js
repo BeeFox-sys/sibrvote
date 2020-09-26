@@ -307,7 +307,7 @@ app.post("/api/addBoard",async (req,res)=>{
     if(!user || !user.admin) return res.sendStatus(401);
 
     try{
-        let board = await db.query(`
+        await db.query(`
         insert into boards
             (board_name, board_slug, board_description, board_item_name, board_max_votes)
         values
@@ -339,7 +339,7 @@ app.post("/api/addItems",async (req,res)=>{
     let items = req.body.items.split("\n");
     items = items.filter(val=>val!="").map(i=>[req.body.board, i.trim()]);
     try{
-        let itemsInserted = await db.query(`
+        await db.query(`
             insert into items
                 (board_id, item_name)
             values
@@ -368,7 +368,7 @@ app.post("/api/removeBoard",async (req,res)=>{
     if(!user || !user.admin) return res.sendStatus(401);
     if(req.body.board != req.body.verify.trim()) return res.send("Confirmation failed: Board Name and Text Field do not match");
     try{
-        let board = await db.query(`
+        await db.query(`
         delete from boards
         where board_name = %L;
     `,[req.body.board]);
