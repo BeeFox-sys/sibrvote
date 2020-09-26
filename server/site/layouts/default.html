@@ -16,14 +16,16 @@
     {%unless board.name %}
     <meta property="twitter:title" content="VOTE">
     <meta property="og:title" content="VOTE">
-    <meta property="og:site_name" content="SIBR">
-    {%else%}
-    <meta property="twitter:title" content="{{board.name}}">
-    <meta property="og:title" content="{{board.name}}">
-    {%endunless%}
     <meta property="twitter:description" content="Vote on your blaseball related leaderboards, and access voting resources for your country">
     <meta property="og:description" content="Vote on your blaseball related leaderboards, and access voting resources for your country">
     <meta property="description" content="Vote on your blaseball related leaderboards, and access voting resources for your country">
+    {%else%}
+    <meta property="twitter:title" content="{{board.name}}">
+    <meta property="og:title" content="{{board.name}}">
+    <meta property="twitter:description" content="{{board.description}}">
+    <meta property="og:description" content="{{board.description}}">
+    <meta property="description" content="{{board.description}}">
+    {%endunless%}
     <meta property="author" content="SIBR">
     <meta property="og:image" content="https://vote.sibr.dev/static/logo.png">
     <meta property="twitter:image" content="https://vote.sibr.dev/static/logo.png">
