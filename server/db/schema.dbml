@@ -1,7 +1,7 @@
 Table "boards" {
   "board_id" int [pk, increment]
-  "board_slug" text
-  "board_name" text
+  "board_slug" text [unique]
+  "board_name" text [unique]
   "board_item_name" text
   "board_description" text
   "board_max_votes" int
@@ -9,8 +9,8 @@ Table "boards" {
 
 Table "items" {
   "item_id" int [pk, increment]
-  "board_id" integer
-  "item_name" text
+  "board_id" integer [unique]
+  "item_name" text [unique, not null]
 }
 
 Table "votes" {

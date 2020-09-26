@@ -10,7 +10,7 @@ CREATE TABLE "boards" (
 CREATE TABLE "items" (
   "item_id" serial PRIMARY KEY,
   "board_id" integer,
-  "item_name" text not null
+  "item_name" text not null,
   UNIQUE(item_name,board_id)
 );
 
