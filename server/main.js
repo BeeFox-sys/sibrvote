@@ -151,7 +151,6 @@ app.get("/vote/:id",async (req,res)=>{
         where board_slug = %L;
     `,[req.params.id]).then(res=>res.rows[0]);
     if(!board) return res.sendStatus(404);
-    console.log(board.id);
     let items = await db.query(`
     select
         items.item_id as id,
@@ -239,7 +238,6 @@ app.post("/api/vote/:board/:id", async (req,res)=>{
 });
 
 app.get("/api/items/:board",async (req,res)=>{
-    console.log(req.params.board);
     let items = await db.query(`
     select
         items.item_id as id,
