@@ -260,6 +260,7 @@ app.get("/api/items/:board",async (req,res)=>{
 
     for (let i = 0; i < votes.length; i++) {
         const voteId = votes[i];
+        if(!voteId) continue;
         items.find(e=>e.id==voteId).voted = true;
     }
     res.status(200);
