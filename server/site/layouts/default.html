@@ -10,9 +10,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400;1,600&amp;display=swap">
     <meta property="theme-colour" content="#265192">
     <meta property="twitter:card" content="summary">
+    <meta property="twitter:site" content="@SIBROfficial">
     <meta property="og:type" content="website">
+    {%unless board.name %}
     <meta property="twitter:title" content="VOTE">
     <meta property="og:title" content="VOTE">
+    <meta property="og:site_name" content="SIBR">
+    {%else%}
+    <meta property="twitter:title" content="{{board.name}}">
+    <meta property="og:title" content="{{board.name}}">
+    <meta property="og:site_name" content="VOTE | SIBR">
+    {%endunless%}
     <meta property="twitter:description" content="Vote on your blaseball related leaderboards, and access voting resources for your country">
     <meta property="og:description" content="Vote on your blaseball related leaderboards, and access voting resources for your country">
     <meta property="description" content="Vote on your blaseball related leaderboards, and access voting resources for your country">
