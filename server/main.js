@@ -151,7 +151,7 @@ app.get("/vote/:id",async (req,res)=>{
         where board_slug = %L;
     `,[req.params.id]).then(res=>res.rows[0]);
     if(!board) return res.sendStatus(404);
-    
+    console.log(board.id);
     let items = await db.query(`
     select
         items.item_id as id,
@@ -239,6 +239,7 @@ app.post("/api/vote/:board/:id", async (req,res)=>{
 });
 
 app.get("/api/items/:board",async (req,res)=>{
+    console.log(req.params.board);
     let items = await db.query(`
     select
         items.item_id as id,
@@ -255,12 +256,12 @@ app.get("/api/items/:board",async (req,res)=>{
         select
             item_id
         from votes
-        where user_id = %L
-    `,[req.session.user.id]).then(res=>res.rows.map(res=>res.item_id)).catch(e=>{console.error(e);return res.sendStatus(500);});
+        where user_id = %L and board_id = %L
+    `,[req.session.user.id, req.params.board]).then(res=>res.rows.map(res=>res.item_id)).catch(e=>{console.error(e);return res.sendStatus(500);});
 
     for (let i = 0; i < votes.length; i++) {
         const voteId = votes[i];
-        if(!voteId) continue;
+        if(!items.find(e=>e.id==voteId)) continue;
         items.find(e=>e.id==voteId).voted = true;
     }
     res.status(200);
