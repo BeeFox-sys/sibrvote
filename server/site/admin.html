@@ -4,43 +4,57 @@
     <div class=admin>
         <div class="addBoard">
             <p>Add Board</p>
-            <input type="text" placeholder="Board Name">
-            <input type="text" placeholder="Slug">
-            <input type="text" placeholder="Description">
-            <input type="text" placeholder="Item Name">
-            <input type="number" placeholder="Allowed Votes">
+            <form action="/api/addBoard" method="post">
+                <input type="text" name="name" required placeholder="Board Name">
+                <input type="text" name="slug" required placeholder="Slug">
+                <input type="text" name="description" placeholder="Description">
+                <input type="text" name="item" required placeholder="Item Name">
+                <input type="number" name="votes" min="1" required value="1" placeholder="Allowed Votes">
 
-            <button>Add</button>
+                <input type="submit" value="Add Board">
+            </form>
         </div>
         <div class="removeBoard">
             <p>Remove Board</p>
-            <input type="text" placeholder="Board Name">
-            <button>Remove</button>
+            <form action="/api/removeBoard" method="post">
+            <p><select class="delBoard" name="board">
+                {% for board in boards %}
+                    <option value="{{board.name}}">{{board.name}}</option>
+                {%endfor%}
+            </select></p>
+            <p><input type="text" required name="verify" placeholder="Board Name"></p>
+            <p><input type="submit" value="Remove Board"></p>
+            </form>
         </div>
         <div class="addItem">
             <p>Add Items to board 
-            <select>
+            <form action="/api/addItems" method="post">
+            <select name="board">
                 {% for board in boards %}
                     <option value={{board.id}}>{{board.name}}</option>
                 {%endfor%}
             </select></p>
-            <textarea name="" id="" cols="30" rows="10"></textarea>
-            <p><button>add</button></p>
+            <textarea name="items" required id="" cols="30" rows="10"></textarea>
+            <p><input type="submit" value="Add Items"></p>
+        </form>
         </div>
         <div class="removeItem">
             <p>Remove Items from board 
-            <select>
-                {% for board in boards %}
-                    <option value={{board.id}}>{{board.name}}</option>
-                {%endfor%}
-            </select></p>
-            <textarea name="" id="" cols="30" rows="10"></textarea>
-            <p><button>remove</button></p>
+                <form action="/api/removeItems" method="post">
+                    <select name="board">
+                        {% for board in boards %}
+                            <option value={{board.id}}>{{board.name}}</option>
+                        {%endfor%}
+                    </select></p>
+                    <textarea name="items" required id="" cols="30" rows="10"></textarea>
+                    <p><input type="submit" value="Remove Items"></p>
         </div>
         <div class="addAdmin">
             <p>Add Admin</p>
-            <input type="text" placeholder="Discord ID">
-            <button>Add</button>
+            <form action="/api/addAdmin" method="post">
+                <input type="text" required name="id" placeholder="Discord ID">
+                <p><input type="submit" value="Add Admin"></p>
+            </form>
         </div>
     </div>
 {% endblock %}

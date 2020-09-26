@@ -1,7 +1,7 @@
 CREATE TABLE "boards" (
   "board_id" serial PRIMARY KEY,
-  "board_slug" text,
-  "board_name" text,
+  "board_slug" text UNIQUE,
+  "board_name" text UNIQUE,
   "board_item_name" text,
   "board_description" text,
   "board_max_votes" int
@@ -10,7 +10,8 @@ CREATE TABLE "boards" (
 CREATE TABLE "items" (
   "item_id" serial PRIMARY KEY,
   "board_id" integer,
-  "item_name" text
+  "item_name" text not null
+  UNIQUE(item_name,board_id)
 );
 
 CREATE TABLE "votes" (

@@ -4,6 +4,7 @@
 {% block "content" %}
     <h2>{{board.name}}</h2>
     <p>{{board.description}}</p>
+    <h6>You can vote {{board.votes}} time{%if board.votes != 1%}s{%endif%} on this board</h6>
     {%assign itemsize = items | size%}
     <div class="board {% if itemsize <= 25 %}squares{% endif %} {% unless user.discord %}logout{%endunless%}" id={{board.id}}>
         <div class=title>

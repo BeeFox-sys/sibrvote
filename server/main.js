@@ -103,7 +103,7 @@ app.get("/admin",async (req,res)=>{
 
     let boards = await db.query(`
         select 
-            board_slug as id,
+            board_id as id,
             board_name as name
         from boards
     `).then(res=>res.rows);
@@ -145,7 +145,8 @@ app.get("/vote/:id",async (req,res)=>{
             board_slug as slug,
             board_name as name,
             board_description as description,
-            board_item_name as itemname
+            board_item_name as itemname,
+            board_max_votes as votes
         from boards
         where board_slug = %L;
     `,[req.params.id]).then(res=>res.rows[0]);
@@ -156,7 +157,7 @@ app.get("/vote/:id",async (req,res)=>{
         items.item_id as id,
         item_name as name,
         count(v.item_id) as count
-    from items left join votes v on items.item_id = v.item_id
+    from items left join votes v using (item_id)
     where items.board_id = %L
     group by items.item_id;
     `,[board.id]).then(res=>res.rows).catch(e=>{console.error(e);return res.sendStatus(500);});
@@ -247,9 +248,9 @@ app.get("/api/items/:board",async (req,res)=>{
     from items left join votes v on items.item_id = v.item_id
     where items.board_id = %L
     group by items.item_id
-    order by count desc;
+    order by "count" desc, item_name asc;
     `,[req.params.board]).then(res=>res.rows).catch(e=>{console.error(e);return res.sendStatus(500);});
-    let votes;
+    let votes = [];
     if(req.session.user) votes = await db.query(`
         select
             item_id
@@ -278,7 +279,21 @@ app.post("/api/addAdmin",async (req,res)=>{
         where user_id = %L
     `,[req.session?.user.id]).then(res=>res.rows[0]);
     if(!user || !user.admin) return res.sendStatus(401);
-    res.sendStatus(200);
+    try{
+        await db.query(`
+        insert into users
+        (user_id, admin)
+        values
+        (%L, true)
+        `,[req.body.id.trim()]);
+    } catch (e){
+        console.error(e);
+        switch (e.message){
+        default: return res.sendStatus(500);
+        }
+    }
+    res.status(200);
+    res.redirect("/admin");
 });
 app.post("/api/addBoard",async (req,res)=>{
     if(!req.session.user) return res.sendStatus(401);
@@ -290,7 +305,26 @@ app.post("/api/addBoard",async (req,res)=>{
         where user_id = %L
     `,[req.session?.user.id]).then(res=>res.rows[0]);
     if(!user || !user.admin) return res.sendStatus(401);
-    res.sendStatus(200);
+
+    try{
+        let board = await db.query(`
+        insert into boards
+            (board_name, board_slug, board_description, board_item_name, board_max_votes)
+        values
+            (%L, %L, %L, %L, %L);
+    `,[req.body.name.trim(), req.body.slug.trim(), req.body.description.trim() ?? null, req.body.item.trim(), req.body.votes]);
+    }catch(e){
+        console.error(e.message);
+        switch(e.message){
+        case "duplicate key value violates unique constraint \"boards_board_slug_key\"": return res.send("Slug in use");
+        case "duplicate key value violates unique constraint \"boards_board_name_key\"": return res.send("Name in use");
+        default: return res.send(e.message);
+        }
+    }
+
+
+    res.status(200);
+    res.redirect("/admin");
 });
 app.post("/api/addItems",async (req,res)=>{
     if(!req.session.user) return res.sendStatus(401);
@@ -302,9 +336,27 @@ app.post("/api/addItems",async (req,res)=>{
         where user_id = %L
     `,[req.session?.user.id]).then(res=>res.rows[0]);
     if(!user || !user.admin) return res.sendStatus(401);
-    res.sendStatus(200);
+    let items = req.body.items.split("\n");
+    items = items.filter(val=>val!="").map(i=>[req.body.board, i.trim()]);
+    try{
+        let itemsInserted = await db.query(`
+            insert into items
+                (board_id, item_name)
+            values
+                %L
+            on conflict (board_id,item_name) do nothing;
+        `,[items]);
+    } catch(e){
+        switch(e.message){
+        default: return res.sendStatus(500);
+        }
+    }
+    res.status(200);
+    res.redirect("/admin");
 });
-app.delete("/api/removeBoard",async (req,res)=>{
+
+
+app.post("/api/removeBoard",async (req,res)=>{
     if(!req.session.user) return res.sendStatus(401);
     let user = await db.query(`
         select
@@ -314,9 +366,23 @@ app.delete("/api/removeBoard",async (req,res)=>{
         where user_id = %L
     `,[req.session?.user.id]).then(res=>res.rows[0]);
     if(!user || !user.admin) return res.sendStatus(401);
-    res.sendStatus(200);
+    if(req.body.board != req.body.verify.trim()) return res.send("Confirmation failed: Board Name and Text Field do not match");
+    try{
+        let board = await db.query(`
+        delete from boards
+        where board_name = %L;
+    `,[req.body.board]);
+    }catch(e){
+        console.error(e.message);
+        switch(e.message){
+        default: return res.send(e.message);
+        }
+    }
+    res.status(200);
+    res.redirect("/admin");
+
 });
-app.delete("/api/removeItems",async (req,res)=>{
+app.post("/api/removeItems",async (req,res)=>{
     if(!req.session.user) return res.sendStatus(401);
     let user = await db.query(`
         select
@@ -326,7 +392,23 @@ app.delete("/api/removeItems",async (req,res)=>{
         where user_id = %L
     `,[req.session?.user.id]).then(res=>res.rows[0]);
     if(!user || !user.admin) return res.sendStatus(401);
-    res.sendStatus(200);
+    let items = req.body.items.split("\n");
+    items = items.filter(val=>val!="").map(i=>i.trim());
+    try{
+        await db.query(`
+        delete from items
+        where board_id = %L and item_name in (%L)
+        `,[req.body.board, items]);
+    }catch(e){
+        console.error(e.message);
+        switch(e.message){
+        default: return res.send(e.message);
+        }
+    }
+
+
+    res.status(200);
+    res.redirect("/admin");
 });
 
 app.use("/static",express.static(__dirname+"/site/static"));

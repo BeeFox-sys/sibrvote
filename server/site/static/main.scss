@@ -201,11 +201,18 @@ body{
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
     grid-auto-rows: auto;
+    gap: 1em;
+    .delBoard{
+        width: 11.2em;
+    }
 }
 
 .board.logout{
     div{
         grid-template-columns: 2fr 1fr;
+    }
+    button{
+        display: none;
     }
 }
 
